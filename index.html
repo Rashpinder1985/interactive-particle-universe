@@ -1,0 +1,309 @@
+ <head>
+        4        <meta charset="UTF-8">
+        5        <meta name="viewport" content="width=device-width, 
+     initial-scale=1.0">
+        6 -      <title>Cool Interactive Visualization</title>
+        6 +      <title>✨ Interactive Particle Universe - Click to Explore!</title>
+        7 +      <meta name="description" content="A mesmerizing interactive particle 
+          + visualization. Move your mouse, click to create explosions, and customize 
+          + the experience!">
+        8 +      <meta property="og:title" content="Interactive Particle Universe">
+        9 +      <meta property="og:description" content="Click, move, and explore 
+     this
+          +  beautiful particle visualization!">
+       10 +      <meta property="og:type" content="website">
+       11 +      <meta name="twitter:card" content="summary_large_image">
+       12        <style>
+       13            * {
+       14                margin: 0;
+     ...
+        76                border-radius: 8px;
+        77                font-size: 14px;
+        78            }
+        79 +  
+        80 +          .welcome-modal {
+        81 +              position: fixed;
+        82 +              top: 0;
+        83 +              left: 0;
+        84 +              width: 100%;
+        85 +              height: 100%;
+        86 +              background: rgba(0, 0, 0, 0.8);
+        87 +              display: flex;
+        88 +              justify-content: center;
+        89 +              align-items: center;
+        90 +              z-index: 1000;
+        91 +              backdrop-filter: blur(10px);
+        92 +          }
+        93 +  
+        94 +          .modal-content {
+        95 +              background: linear-gradient(135deg, #2d1b69, #11998e);
+        96 +              padding: 40px;
+        97 +              border-radius: 20px;
+        98 +              text-align: center;
+        99 +              color: white;
+       100 +              max-width: 500px;
+       101 +              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+       102 +              border: 2px solid rgba(255, 255, 255, 0.2);
+       103 +          }
+       104 +  
+       105 +          .modal-content h1 {
+       106 +              margin-bottom: 20px;
+       107 +              font-size: 2.5em;
+       108 +              background: linear-gradient(45deg, #ff6b6b, #feca57, 
+     #48dbfb,
+           +  #ff9ff3);
+       109 +              -webkit-background-clip: text;
+       110 +              -webkit-text-fill-color: transparent;
+       111 +              background-clip: text;
+       112 +          }
+       113 +  
+       114 +          .modal-content p {
+       115 +              margin: 15px 0;
+       116 +              font-size: 1.1em;
+       117 +              line-height: 1.6;
+       118 +          }
+       119 +  
+       120 +          .start-btn {
+       121 +              background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+       122 +              border: none;
+       123 +              color: white;
+       124 +              padding: 15px 30px;
+       125 +              font-size: 1.2em;
+       126 +              border-radius: 10px;
+       127 +              cursor: pointer;
+       128 +              margin-top: 20px;
+       129 +              transition: all 0.3s;
+       130 +              box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+       131 +          }
+       132 +  
+       133 +          .start-btn:hover {
+       134 +              transform: translateY(-2px);
+       135 +              box-shadow: 0 10px 25px rgba(255, 107, 107, 0.6);
+       136 +          }
+       137 +  
+       138 +          .click-message {
+       139 +              position: absolute;
+       140 +              color: white;
+       141 +              font-weight: bold;
+       142 +              font-size: 16px;
+       143 +              pointer-events: none;
+       144 +              z-index: 100;
+       145 +              text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+       146 +              animation: fadeOut 2s ease-out forwards;
+       147 +          }
+       148 +  
+       149 +          @keyframes fadeOut {
+       150 +              0% {
+       151 +                  opacity: 1;
+       152 +                  transform: translateY(0) scale(1);
+       153 +              }
+       154 +              100% {
+       155 +                  opacity: 0;
+       156 +                  transform: translateY(-50px) scale(1.5);
+       157 +              }
+       158 +          }
+       159 +  
+       160 +          .share-btn {
+       161 +              background: linear-gradient(45deg, #48dbfb, #0abde3);
+       162 +              margin-left: 10px;
+       163 +          }
+       164 +  
+       165 +          .hidden {
+       166 +              display: none;
+       167 +          }
+       168 +  
+       169 +          .tip {
+       170 +              position: absolute;
+       171 +              top: 50%;
+       172 +              left: 50%;
+       173 +              transform: translate(-50%, -50%);
+       174 +              color: white;
+       175 +              font-size: 24px;
+       176 +              text-align: center;
+       177 +              opacity: 0.7;
+       178 +              pointer-events: none;
+       179 +              z-index: 50;
+       180 +              animation: pulse 2s infinite;
+       181 +          }
+       182 +  
+       183 +          @keyframes pulse {
+       184 +              0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) 
+           + scale(1); }
+       185 +              50% { opacity: 1; transform: translate(-50%, -50%) 
+           + scale(1.1); }
+       186 +          }
+       187        </style>
+       188    </head>
+       189    <body>
+       190 +      <!-- Welcome Modal -->
+       191 +      <div id="welcomeModal" class="welcome-modal">
+       192 +          <div class="modal-content">
+       193 +              <h1>✨ Welcome to Particle Universe ✨</h1>
+       194 +              <p>🎨 <strong>Move your mouse</strong> to bend reality 
+     around
+           +  particles</p>
+       195 +              <p>💥 <strong>Click anywhere</strong> to create magical 
+           + explosions</p>
+       196 +              <p>🎛️ <strong>Use controls</strong> to customize your 
+           + experience</p>
+       197 +              <p>🌈 <strong>Change color modes</strong> for different 
+           + vibes</p>
+       198 +              <button class="start-btn" onclick="startExperience()">Start 
+           + Your Journey</button>
+       199 +          </div>
+       200 +      </div>
+       201 +  
+       202 +      <!-- Initial Tip -->
+       203 +      <div id="initialTip" class="tip hidden">
+       204 +          👆 Click anywhere to create an explosion!
+       205 +      </div>
+       206 +  
+       207        <div class="controls">
+       208            <div class="control-item">
+       209                <label>Particles:</label>
+     ...
+        91                <span id="speedValue">1</span>
+        92            </div>
+        93            <div class="control-item">
+        94 -              <button id="colorMode">Change Colors</button>
+        94 +              <button id="colorMode">Rainbow Mode</button>
+        95                <button id="resetBtn">Reset</button>
+        96            </div>
+        97 +          <div class="control-item">
+        98 +              <button id="shareBtn" class="share-btn">Share ✨</button>
+        99 +          </div>
+       100        </div>
+       101    
+       102        <canvas id="canvas"></canvas>
+       103    
+       104        <div class="info">
+       105 -          <div>Move mouse to interact</div>
+       106 -          <div>Click to create explosion</div>
+       107 -          <div>Use controls to customize</div>
+       105 +          <div>🎯 Mouse: Attract particles</div>
+       106 +          <div>💥 Click: Create explosions</div>
+       107 +          <div>🎛️ Controls: Customize magic</div>
+       108 +          <div id="clickCount">🎆 Explosions: 0</div>
+       109        </div>
+       110    
+       111        <script>
+     ...
+       181            let colorMode = 0;
+       182            let mouse = { x: 0, y: 0 };
+       183            let mouseRadius = 100;
+       184 +          let explosionCount = 0;
+       185 +          let showTip = false;
+       186 +          let messages = [
+       187 +              '🌟 Amazing!', '✨ Beautiful!', '🎆 Spectacular!', 
+       188 +              '🔥 Epic!', '💫 Magical!', '🌈 Gorgeous!',
+       189 +              '⭐ Fantastic!', '🎨 Artistic!', '💥 Boom!', '🎪 Wow!'
+       190 +          ];
+       191    
+       192            // Initialize particles
+       193            function initParticles() {
+     ...
+       252    
+       253            canvas.addEventListener('click', (e) => {
+       254                const rect = canvas.getBoundingClientRect();
+       255 -              createExplosion(e.clientX - rect.left, e.clientY - 
+     rect.top);
+       255 +              const x = e.clientX - rect.left;
+       256 +              const y = e.clientY - rect.top;
+       257 +              createExplosion(x, y);
+       258 +              showClickMessage(e.clientX, e.clientY);
+       259 +              explosionCount++;
+       260 +              document.getElementById('clickCount').textContent = `🎆 
+           + Explosions: ${explosionCount}`;
+       261 +              
+       262 +              // Hide tip after first click
+       263 +              if (showTip) {
+       264 +                  
+           + document.getElementById('initialTip').classList.add('hidden');
+       265 +                  showTip = false;
+       266 +              }
+       267            });
+       268    
+       269            // Controls
+     ...
+       268    
+       269            document.getElementById('colorMode').addEventListener('click', 
+     ()
+              => {
+       270                colorMode = (colorMode + 1) % 4;
+       271 -              const modes = ['Rainbow', 'Blue-Purple', 'Fire', 'Ocean'];
+       271 +              const modes = ['Rainbow Mode', 'Cosmic Mode', 'Fire Mode', 
+     'Ocean Mode'];
+           + 'Ocean Mode'];
+       272                document.getElementById('colorMode').textContent = 
+             modes[colorMode];
+       273            });
+       274    
+     ...
+       282                canvas.height = window.innerHeight * 0.8;
+       283            });
+       284    
+       285 +          // Click message system
+       286 +          function showClickMessage(x, y) {
+       287 +              const message = document.createElement('div');
+       288 +              message.className = 'click-message';
+       289 +              message.textContent = messages[Math.floor(Math.random() * 
+           + messages.length)];
+       290 +              message.style.left = x + 'px';
+       291 +              message.style.top = y + 'px';
+       292 +              document.body.appendChild(message);
+       293 +              
+       294 +              setTimeout(() => {
+       295 +                  document.body.removeChild(message);
+       296 +              }, 2000);
+       297 +          }
+       298 +  
+       299 +          // Welcome experience
+       300 +          function startExperience() {
+       301 +              
+           + document.getElementById('welcomeModal').classList.add('hidden');
+       302 +              setTimeout(() => {
+       303 +                  
+           + document.getElementById('initialTip').classList.remove('hidden');
+       304 +                  showTip = true;
+       305 +                  setTimeout(() => {
+       306 +                      if (showTip) {
+       307 +                          
+           + document.getElementById('initialTip').classList.add('hidden');
+       308 +                      }
+       309 +                  }, 5000);
+       310 +              }, 1000);
+       311 +          }
+       312 +  
+       313 +          // Share functionality
+       314 +          document.getElementById('shareBtn').addEventListener('click', () 
+           + => {
+       315 +              if (navigator.share) {
+       316 +                  navigator.share({
+       317 +                      title: '✨ Interactive Particle Universe',
+       318 +                      text: 'Check out this amazing interactive particle 
+           + visualization! Click and move your mouse to create magic! 🎆',
+       319 +                      url: window.location.href
+       320 +                  });
+       321 +              } else {
+       322 +                  // Fallback: copy to clipboard
+       323 +                  const shareText = `✨ Check out this amazing Interactive 
+           + Particle Universe! 🎆\n\nClick and move your mouse to create 
+           + magic!\n\n${window.location.href}`;
+       324 +                  navigator.clipboard.writeText(shareText).then(() => {
+       325 +                      alert('🎉 Share link copied to clipboard!');
+       326 +                  }).catch(() => {
+       327 +                      // Fallback for older browsers
+       328 +                      const textarea = document.createElement('textarea');
+       329 +                      textarea.value = shareText;
+       330 +                      document.body.appendChild(textarea);
+       331 +                      textarea.select();
+       332 +                      document.execCommand('copy');
+       333 +                      document.body.removeChild(textarea);
+       334 +                      alert('🎉 Share text copied to clipboard!');
+       335 +                  });
+       336 +              }
+       337 +          });
+       338 +  
+       339            // Start animation
+       340            initParticles();
+       341            animate();
